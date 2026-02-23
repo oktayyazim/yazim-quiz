@@ -1,0 +1,22 @@
+{
+  "birlesik": [
+    {"dogru": "birçok", "yanlis": "bir çok"},
+    {"dogru": "herhangi", "yanlis": "her hangi"},
+    {"dogru": "hiçbir", "yanlis": "hiç bir"},
+    {"dogru": "birkaç", "yanlis": "bir kaç"},
+    {"dogru": "pekçok", "yanlis": "pek çok"}
+  ],
+  "de_da": [
+    {"dogru": "evde", "yanlis": "ev de"},
+    {"dogru": "okulda", "yanlis": "okul da"},
+    {"dogru": "kitapta", "yanlis": "kitap ta"},
+    {"dogru": "sende", "yanlis": "sen de"},
+    {"dogru": "bende", "yanlis": "ben de"}
+  ],
+  "ki": [
+    {"dogru": "belki", "yanlis": "bel ki"},
+    {"dogru": "çünkü", "yanlis": "çün kü"},
+    {"dogru": "halbuki", "yanlis": "hal bu ki"},
+    {"dogru": "mademki", "yanlis": "madem ki"}
+  ]
+}
