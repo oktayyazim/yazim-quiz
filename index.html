@@ -108,66 +108,41 @@ border-bottom:1px solid gray;
 
 <script>
 
-const words = [
-{word:"herkes", correct:true},
-{word:"hiç bir", correct:false},
-{word:"birkaç", correct:true},
-{word:"her şey", correct:true},
-{word:"yanlız", correct:false},
-{word:"yalnız", correct:true},
-{word:"bir şey", correct:true},
-{word:"hiçkimse", correct:false},
-{word:"pek çok", correct:true},
-{word:"birşey", correct:false}
-];
-
+let words = [];
 let currentWord;
 let score = 0;
 
+// JSON'dan kelimeleri çek
+fetch("kelimeler.json")
+  .then(response => response.json())
+  .then(data => {
+
+    // Kategorileri tek listeye çevir
+    Object.keys(data).forEach(category => {
+      data[category].forEach(item => {
+        words.push({ word: item.dogru, correct: true });
+        words.push({ word: item.yanlis, correct: false });
+      });
+    });
+
+    newWord();
+  });
+
 function newWord(){
-currentWord = words[Math.floor(Math.random()*words.length)];
-document.getElementById("word").innerText = currentWord.word;
+  currentWord = words[Math.floor(Math.random()*words.length)];
+  document.getElementById("word").innerText = currentWord.word;
 }
 
 function checkAnswer(answer){
-if(answer === currentWord.correct){
-score++;
-}else{
-score--;
+  if(answer === currentWord.correct){
+    score++;
+  } else {
+    score--;
+  }
+
+  document.getElementById("score").innerText = score;
+  newWord();
 }
-document.getElementById("score").innerText = score;
-newWord();
-}
-
-function saveScore(){
-let username = document.getElementById("username").value;
-if(username.trim() === ""){
-alert("İsim gir bro 😎");
-return;
-}
-
-let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-
-leaderboard.push({name:username, score:score});
-leaderboard.sort((a,b)=>b.score-a.score);
-
-localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
-
-displayLeaderboard();
-}
-
-function displayLeaderboard(){
-let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-let board = document.getElementById("leaderboard");
-board.innerHTML="";
-
-leaderboard.slice(0,10).forEach((player,index)=>{
-board.innerHTML += `<div class="leader-item">${index+1}. ${player.name} - ${player.score}</div>`;
-});
-}
-
-newWord();
-displayLeaderboard();
 
 </script>
 
