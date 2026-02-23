@@ -4,124 +4,167 @@
 <meta charset="UTF-8">
 <title>Yazım Kuralları Quiz</title>
 <style>
-
 body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #4e73df, #1cc88a);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    color: white;
+    font-family: Arial;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+    color:white;
 }
 
 .container {
-    background: white;
-    color: black;
-    padding: 40px;
-    border-radius: 20px;
-    width: 350px;
-    text-align: center;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    background:white;
+    color:black;
+    padding:30px;
+    border-radius:15px;
+    width:350px;
+    text-align:center;
 }
 
-h2 {
-    margin-bottom: 30px;
+button {
+    padding:10px 15px;
+    margin:8px;
+    border:none;
+    border-radius:8px;
+    cursor:pointer;
+    font-size:16px;
 }
 
-.option {
-    display: block;
-    margin: 15px 0;
-    padding: 15px;
-    border-radius: 10px;
-    border: 2px solid #ddd;
-    cursor: pointer;
-    font-size: 18px;
-    transition: 0.3s;
-}
+.correct { background:green; color:white; }
+.wrong { background:red; color:white; }
 
-.option:hover {
-    background: #f0f0f0;
-}
-
-.correct {
-    background-color: #28a745 !important;
-    color: white;
-}
-
-.wrong {
-    background-color: #dc3545 !important;
-    color: white;
-}
-
-.score {
-    margin-top: 20px;
-    font-weight: bold;
-}
-
+.hidden { display:none; }
 </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Hangisi doğru yazılmıştır?</h2>
-    <div id="secenek1" class="option"></div>
-    <div id="secenek2" class="option"></div>
-    <div class="score">Puan: <span id="puan">0</span></div>
+
+<div id="menu">
+<h2>Yazım Quizine Hoş Geldin</h2>
+<button onclick="showCategories()">Kategori Seç</button>
+<button onclick="showLibrary()">Kütüphane</button>
+</div>
+
+<div id="categories" class="hidden">
+<h3>Kategori Seç</h3>
+<button onclick="startGame('birlesik')">Birleşik</button>
+<button onclick="startGame('de_da')">De / Da</button>
+<button onclick="startGame('ki')">Ki</button>
+<br><br>
+<button onclick="goMenu()">Geri</button>
+</div>
+
+<div id="quiz" class="hidden">
+<h3>Hangisi Doğru?</h3>
+<div id="question"></div>
+<button id="btn1"></button>
+<button id="btn2"></button>
+<br><br>
+<button onclick="goMenu()">Menü</button>
+</div>
+
+<div id="library" class="hidden">
+<h3>Kütüphane</h3>
+<div id="libraryList"></div>
+<br>
+<button onclick="goMenu()">Geri</button>
+</div>
+
 </div>
 
 <script>
 
-let sorular = [
-    { dogru: "birçok", yanlis: "bir çok" },
-    { dogru: "başkent", yanlis: "baş kent" },
-    { dogru: "hiçbir", yanlis: "hiç bir" },
-    { dogru: "art arda", yanlis: "artarda" },
-    { dogru: "her şey", yanlis: "herşey" }
-];
+let data = {};
+let currentCategory = "";
+let currentQuestion = null;
 
-let puan = 0;
-let aktifSoru;
+fetch("kelimeler.json")
+.then(res => res.json())
+.then(json => data = json);
 
-function yeniSoru() {
-
-    let rastgele = Math.floor(Math.random() * sorular.length);
-    aktifSoru = sorular[rastgele];
-
-    let secenekler = [aktifSoru.dogru, aktifSoru.yanlis];
-
-    // Karıştır
-    secenekler.sort(() => Math.random() - 0.5);
-
-    let s1 = document.getElementById("secenek1");
-    let s2 = document.getElementById("secenek2");
-
-    s1.className = "option";
-    s2.className = "option";
-
-    s1.innerText = secenekler[0];
-    s2.innerText = secenekler[1];
-
-    s1.onclick = () => kontrol(secenekler[0], s1, s2);
-    s2.onclick = () => kontrol(secenekler[1], s2, s1);
+function showCategories(){
+    hideAll();
+    document.getElementById("categories").classList.remove("hidden");
 }
 
-function kontrol(secim, tiklanan, diger) {
+function showLibrary(){
+    hideAll();
+    document.getElementById("library").classList.remove("hidden");
+    loadLibrary();
+}
 
-    if(secim === aktifSoru.dogru) {
-        puan++;
-        document.getElementById("puan").innerText = puan;
-        tiklanan.classList.add("correct");
+function goMenu(){
+    hideAll();
+    document.getElementById("menu").classList.remove("hidden");
+}
+
+function hideAll(){
+    document.getElementById("menu").classList.add("hidden");
+    document.getElementById("categories").classList.add("hidden");
+    document.getElementById("quiz").classList.add("hidden");
+    document.getElementById("library").classList.add("hidden");
+}
+
+function startGame(category){
+    currentCategory = category;
+    hideAll();
+    document.getElementById("quiz").classList.remove("hidden");
+    nextQuestion();
+}
+
+function nextQuestion(){
+    let list = data[currentCategory];
+    currentQuestion = list[Math.floor(Math.random() * list.length)];
+
+    let options = [currentQuestion.dogru, currentQuestion.yanlis];
+    options.sort(() => Math.random() - 0.5);
+
+    document.getElementById("question").innerText = "";
+
+    let btn1 = document.getElementById("btn1");
+    let btn2 = document.getElementById("btn2");
+
+    btn1.className = "";
+    btn2.className = "";
+
+    btn1.innerText = options[0];
+    btn2.innerText = options[1];
+
+    btn1.onclick = () => checkAnswer(options[0], btn1);
+    btn2.onclick = () => checkAnswer(options[1], btn2);
+}
+
+function checkAnswer(answer, button){
+    if(answer === currentQuestion.dogru){
+        button.classList.add("correct");
+        saveLibrary(answer, true);
     } else {
-        tiklanan.classList.add("wrong");
-        diger.classList.add("correct");
+        button.classList.add("wrong");
+        saveLibrary(currentQuestion.dogru, false);
     }
 
-    setTimeout(yeniSoru, 1200);
+    setTimeout(nextQuestion, 800);
 }
 
-yeniSoru();
+function saveLibrary(word, isCorrect){
+    let library = JSON.parse(localStorage.getItem("library")) || [];
+    library.push({word, isCorrect});
+    localStorage.setItem("library", JSON.stringify(library));
+}
+
+function loadLibrary(){
+    let library = JSON.parse(localStorage.getItem("library")) || [];
+    let div = document.getElementById("libraryList");
+    div.innerHTML = "";
+
+    library.slice(-20).forEach(item => {
+        div.innerHTML += `<p>${item.word} - ${item.isCorrect ? "Doğru" : "Yanlış"}</p>`;
+    });
+}
 
 </script>
 
