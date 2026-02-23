@@ -5,87 +5,82 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Yazım Quiz</title>
 
-<!-- Google Font -->
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
 
 <style>
-body {
-    margin:0;
-    font-family: 'Orbitron', sans-serif;
-    background: radial-gradient(circle at top, #0f2027, #203a43, #2c5364);
-    color:white;
-    text-align:center;
+body{
+margin:0;
+background:linear-gradient(135deg,#141e30,#243b55);
+font-family:'Orbitron',sans-serif;
+color:white;
+text-align:center;
 }
 
-h1 {
-    font-size: 50px;
-    margin-top:30px;
-    text-shadow: 0 0 15px cyan;
+h1{
+margin-top:30px;
+font-size:45px;
+text-shadow:0 0 15px cyan;
 }
 
-.container {
-    margin-top:40px;
+.container{
+margin-top:40px;
 }
 
-button {
-    padding:12px 25px;
-    margin:10px;
-    font-size:18px;
-    border:none;
-    border-radius:8px;
-    cursor:pointer;
-    font-family:'Orbitron';
-    transition:0.3s;
+button{
+padding:12px 25px;
+margin:10px;
+font-size:18px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+transition:0.3s;
 }
 
-.correct {
-    background:#00ff99;
+button:hover{
+transform:scale(1.1);
 }
 
-.wrong {
-    background:#ff4d4d;
+.correct{
+background:#00ff99;
 }
 
-button:hover {
-    transform:scale(1.1);
+.wrong{
+background:#ff4d4d;
 }
 
-.score-box {
-    font-size:22px;
-    margin-top:20px;
+.score{
+font-size:22px;
+margin-top:20px;
 }
 
-.user-area input {
-    padding:10px;
-    border-radius:6px;
-    border:none;
-    font-size:16px;
-    text-align:center;
+.user-area{
+margin-top:30px;
 }
 
-.user-area button {
-    background:cyan;
+.user-area input{
+padding:10px;
+border-radius:6px;
+border:none;
+text-align:center;
 }
 
-#leaderboard {
-    margin-top:20px;
-    background: rgba(0,0,0,0.4);
-    padding:15px;
-    border-radius:10px;
-    width:300px;
-    margin-left:auto;
-    margin-right:auto;
+.user-area button{
+background:cyan;
 }
 
-.leader-item {
-    padding:5px;
-    border-bottom:1px solid gray;
+#leaderboard{
+margin-top:20px;
+width:300px;
+margin-left:auto;
+margin-right:auto;
+background:rgba(0,0,0,0.4);
+padding:15px;
+border-radius:10px;
 }
 
-.welcome {
-    font-size:20px;
-    margin-top:10px;
-    opacity:0.8;
+.leader-item{
+padding:5px;
+border-bottom:1px solid gray;
 }
 </style>
 </head>
@@ -93,21 +88,19 @@ button:hover {
 <body>
 
 <h1>⚡ YAZIM QUIZ ⚡</h1>
-<div class="welcome">Hazır mısın? En yüksek skoru yap ve lider ol!</div>
 
 <div class="container">
-    <h2 id="word">Kelime</h2>
-    <button class="correct" onclick="checkAnswer(true)">Doğru</button>
-    <button class="wrong" onclick="checkAnswer(false)">Yanlış</button>
+<h2 id="word">Kelime</h2>
 
-    <div class="score-box">Skor: <span id="score">0</span></div>
+<button class="correct" onclick="checkAnswer(true)">Doğru</button>
+<button class="wrong" onclick="checkAnswer(false)">Yanlış</button>
+
+<div class="score">Skor: <span id="score">0</span></div>
 </div>
 
-<hr style="margin-top:40px; opacity:0.3;">
-
 <div class="user-area">
-    <input type="text" id="username" placeholder="Kullanıcı adın">
-    <button onclick="saveScore()">Skoru Kaydet</button>
+<input type="text" id="username" placeholder="Kullanıcı adın">
+<button onclick="saveScore()">Skoru Kaydet</button>
 </div>
 
 <h2>🏆 Leaderboard</h2>
@@ -116,62 +109,61 @@ button:hover {
 <script>
 
 const words = [
-{ word:"herkes", correct:true },
-{ word:"hiç bir", correct:false },
-{ word:"birkaç", correct:true },
-{ word:"her şey", correct:true },
-{ word:"yanlız", correct:false },
-{ word:"yalnız", correct:true },
-{ word:"bir şey", correct:true },
-{ word:"hiçkimse", correct:false },
-{ word:"pek çok", correct:true },
-{ word:"birşey", correct:false }
+{word:"herkes", correct:true},
+{word:"hiç bir", correct:false},
+{word:"birkaç", correct:true},
+{word:"her şey", correct:true},
+{word:"yanlız", correct:false},
+{word:"yalnız", correct:true},
+{word:"bir şey", correct:true},
+{word:"hiçkimse", correct:false},
+{word:"pek çok", correct:true},
+{word:"birşey", correct:false}
 ];
 
 let currentWord;
 let score = 0;
 
 function newWord(){
-    currentWord = words[Math.floor(Math.random()*words.length)];
-    document.getElementById("word").innerText = currentWord.word;
+currentWord = words[Math.floor(Math.random()*words.length)];
+document.getElementById("word").innerText = currentWord.word;
 }
 
 function checkAnswer(answer){
-    if(answer === currentWord.correct){
-        score++;
-    } else {
-        score--;
-    }
-    document.getElementById("score").innerText = score;
-    newWord();
+if(answer === currentWord.correct){
+score++;
+}else{
+score--;
+}
+document.getElementById("score").innerText = score;
+newWord();
 }
 
 function saveScore(){
-    let username = document.getElementById("username").value;
-    if(username.trim() === "") return alert("İsim gir bro 😎");
+let username = document.getElementById("username").value;
+if(username.trim() === ""){
+alert("İsim gir bro 😎");
+return;
+}
 
-    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
 
-    leaderboard.push({name:username, score:score});
-    leaderboard.sort((a,b)=>b.score - a.score);
+leaderboard.push({name:username, score:score});
+leaderboard.sort((a,b)=>b.score-a.score);
 
-    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
 
-    displayLeaderboard();
+displayLeaderboard();
 }
 
 function displayLeaderboard(){
-    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
-    let boardDiv = document.getElementById("leaderboard");
-    boardDiv.innerHTML = "";
+let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+let board = document.getElementById("leaderboard");
+board.innerHTML="";
 
-    leaderboard.slice(0,10).forEach((player,index)=>{
-        boardDiv.innerHTML += `
-            <div class="leader-item">
-                ${index+1}. ${player.name} - ${player.score}
-            </div>
-        `;
-    });
+leaderboard.slice(0,10).forEach((player,index)=>{
+board.innerHTML += `<div class="leader-item">${index+1}. ${player.name} - ${player.score}</div>`;
+});
 }
 
 newWord();
