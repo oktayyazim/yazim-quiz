@@ -1,217 +1,181 @@
 <!DOCTYPE html>
-<html>
+<html lang="tr">
 <head>
 <meta charset="UTF-8">
-<title>Yazım Kuralları Quiz</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Yazım Quiz</title>
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;800&display=swap" rel="stylesheet">
+
 <style>
-
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800&display=swap');
-
 body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #1e3c72, #2a5298);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
     margin:0;
-    overflow:hidden;
+    font-family: 'Orbitron', sans-serif;
+    background: radial-gradient(circle at top, #0f2027, #203a43, #2c5364);
+    color:white;
+    text-align:center;
+}
+
+h1 {
+    font-size: 50px;
+    margin-top:30px;
+    text-shadow: 0 0 15px cyan;
 }
 
 .container {
-    background: rgba(255,255,255,0.15);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    padding:40px;
-    border-radius:25px;
-    width:380px;
-    text-align:center;
-    box-shadow: 0 25px 50px rgba(0,0,0,0.3);
-    color:white;
-    animation: fadeIn 0.6s ease;
-}
-
-h2, h3 {
-    font-weight:800;
-    letter-spacing:1px;
-    margin-bottom:20px;
-}
-
-#question {
-    font-size:22px;
-    font-weight:600;
-    margin-bottom:20px;
+    margin-top:40px;
 }
 
 button {
-    width:100%;
-    padding:14px;
-    margin:10px 0;
+    padding:12px 25px;
+    margin:10px;
+    font-size:18px;
     border:none;
-    border-radius:14px;
+    border-radius:8px;
     cursor:pointer;
-    font-size:17px;
-    font-weight:600;
-    transition: all 0.3s ease;
-    background: rgba(255,255,255,0.2);
-    color:white;
-    backdrop-filter: blur(5px);
-}
-
-button:hover {
-    transform: scale(1.05);
-    background: rgba(255,255,255,0.35);
+    font-family:'Orbitron';
+    transition:0.3s;
 }
 
 .correct {
-    background: linear-gradient(135deg, #00c853, #00e676) !important;
-    color:white;
-    transform: scale(1.05);
+    background:#00ff99;
 }
 
 .wrong {
-    background: linear-gradient(135deg, #d50000, #ff1744) !important;
-    color:white;
-    transform: scale(1.05);
+    background:#ff4d4d;
 }
 
-.hidden {
-    display:none;
+button:hover {
+    transform:scale(1.1);
 }
 
-@keyframes fadeIn {
-    from { opacity:0; transform:translateY(20px); }
-    to { opacity:1; transform:translateY(0); }
+.score-box {
+    font-size:22px;
+    margin-top:20px;
 }
 
+.user-area input {
+    padding:10px;
+    border-radius:6px;
+    border:none;
+    font-size:16px;
+    text-align:center;
+}
+
+.user-area button {
+    background:cyan;
+}
+
+#leaderboard {
+    margin-top:20px;
+    background: rgba(0,0,0,0.4);
+    padding:15px;
+    border-radius:10px;
+    width:300px;
+    margin-left:auto;
+    margin-right:auto;
+}
+
+.leader-item {
+    padding:5px;
+    border-bottom:1px solid gray;
+}
+
+.welcome {
+    font-size:20px;
+    margin-top:10px;
+    opacity:0.8;
+}
 </style>
 </head>
+
 <body>
 
+<h1>⚡ YAZIM QUIZ ⚡</h1>
+<div class="welcome">Hazır mısın? En yüksek skoru yap ve lider ol!</div>
+
 <div class="container">
+    <h2 id="word">Kelime</h2>
+    <button class="correct" onclick="checkAnswer(true)">Doğru</button>
+    <button class="wrong" onclick="checkAnswer(false)">Yanlış</button>
 
-<div id="menu">
-<h2>Yazım Quizine Hoş Geldin</h2>
-<button onclick="showCategories()">Kategori Seç</button>
-<button onclick="showLibrary()">Kütüphane</button>
+    <div class="score-box">Skor: <span id="score">0</span></div>
 </div>
 
-<div id="categories" class="hidden">
-<h3>Kategori Seç</h3>
-<button onclick="startGame('birlesik')">Birleşik</button>
-<button onclick="startGame('de_da')">De / Da</button>
-<button onclick="startGame('ki')">Ki</button>
-<br><br>
-<button onclick="goMenu()">Geri</button>
+<hr style="margin-top:40px; opacity:0.3;">
+
+<div class="user-area">
+    <input type="text" id="username" placeholder="Kullanıcı adın">
+    <button onclick="saveScore()">Skoru Kaydet</button>
 </div>
 
-<div id="quiz" class="hidden">
-<h3>Hangisi Doğru?</h3>
-<div id="question"></div>
-<button id="btn1"></button>
-<button id="btn2"></button>
-<br><br>
-<button onclick="goMenu()">Menü</button>
-</div>
-
-<div id="library" class="hidden">
-<h3>Kütüphane</h3>
-<div id="libraryList"></div>
-<br>
-<button onclick="goMenu()">Geri</button>
-</div>
-
-</div>
+<h2>🏆 Leaderboard</h2>
+<div id="leaderboard"></div>
 
 <script>
 
-let data = {};
-let currentCategory = "";
-let currentQuestion = null;
+const words = [
+{ word:"herkes", correct:true },
+{ word:"hiç bir", correct:false },
+{ word:"birkaç", correct:true },
+{ word:"her şey", correct:true },
+{ word:"yanlız", correct:false },
+{ word:"yalnız", correct:true },
+{ word:"bir şey", correct:true },
+{ word:"hiçkimse", correct:false },
+{ word:"pek çok", correct:true },
+{ word:"birşey", correct:false }
+];
 
-fetch("kelimeler.json")
-.then(res => res.json())
-.then(json => data = json);
+let currentWord;
+let score = 0;
 
-function showCategories(){
-    hideAll();
-    document.getElementById("categories").classList.remove("hidden");
+function newWord(){
+    currentWord = words[Math.floor(Math.random()*words.length)];
+    document.getElementById("word").innerText = currentWord.word;
 }
 
-function showLibrary(){
-    hideAll();
-    document.getElementById("library").classList.remove("hidden");
-    loadLibrary();
-}
-
-function goMenu(){
-    hideAll();
-    document.getElementById("menu").classList.remove("hidden");
-}
-
-function hideAll(){
-    document.getElementById("menu").classList.add("hidden");
-    document.getElementById("categories").classList.add("hidden");
-    document.getElementById("quiz").classList.add("hidden");
-    document.getElementById("library").classList.add("hidden");
-}
-
-function startGame(category){
-    currentCategory = category;
-    hideAll();
-    document.getElementById("quiz").classList.remove("hidden");
-    nextQuestion();
-}
-
-function nextQuestion(){
-    let list = data[currentCategory];
-    currentQuestion = list[Math.floor(Math.random() * list.length)];
-
-    let options = [currentQuestion.dogru, currentQuestion.yanlis];
-    options.sort(() => Math.random() - 0.5);
-
-    document.getElementById("question").innerText = "";
-
-    let btn1 = document.getElementById("btn1");
-    let btn2 = document.getElementById("btn2");
-
-    btn1.className = "";
-    btn2.className = "";
-
-    btn1.innerText = options[0];
-    btn2.innerText = options[1];
-
-    btn1.onclick = () => checkAnswer(options[0], btn1);
-    btn2.onclick = () => checkAnswer(options[1], btn2);
-}
-
-function checkAnswer(answer, button){
-    if(answer === currentQuestion.dogru){
-        button.classList.add("correct");
-        saveLibrary(answer, true);
+function checkAnswer(answer){
+    if(answer === currentWord.correct){
+        score++;
     } else {
-        button.classList.add("wrong");
-        saveLibrary(currentQuestion.dogru, false);
+        score--;
     }
-
-    setTimeout(nextQuestion, 800);
+    document.getElementById("score").innerText = score;
+    newWord();
 }
 
-function saveLibrary(word, isCorrect){
-    let library = JSON.parse(localStorage.getItem("library")) || [];
-    library.push({word, isCorrect});
-    localStorage.setItem("library", JSON.stringify(library));
+function saveScore(){
+    let username = document.getElementById("username").value;
+    if(username.trim() === "") return alert("İsim gir bro 😎");
+
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+
+    leaderboard.push({name:username, score:score});
+    leaderboard.sort((a,b)=>b.score - a.score);
+
+    localStorage.setItem("leaderboard", JSON.stringify(leaderboard));
+
+    displayLeaderboard();
 }
 
-function loadLibrary(){
-    let library = JSON.parse(localStorage.getItem("library")) || [];
-    let div = document.getElementById("libraryList");
-    div.innerHTML = "";
+function displayLeaderboard(){
+    let leaderboard = JSON.parse(localStorage.getItem("leaderboard")) || [];
+    let boardDiv = document.getElementById("leaderboard");
+    boardDiv.innerHTML = "";
 
-    library.slice(-20).forEach(item => {
-        div.innerHTML += `<p>${item.word} - ${item.isCorrect ? "Doğru" : "Yanlış"}</p>`;
+    leaderboard.slice(0,10).forEach((player,index)=>{
+        boardDiv.innerHTML += `
+            <div class="leader-item">
+                ${index+1}. ${player.name} - ${player.score}
+            </div>
+        `;
     });
 }
+
+newWord();
+displayLeaderboard();
 
 </script>
 
